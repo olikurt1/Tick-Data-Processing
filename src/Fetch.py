@@ -33,7 +33,10 @@ def fetch_with_retry(url, max_retries=5):
 
 
 def fetch_sightings():
-    return fetch_with_retry(f"{BASE_URL}/tick-sightings")
+    data = fetch_with_retry(f"{BASE_URL}/tick-sightings")
+    if not isinstance(data, list):
+        raise ValueError(f"Expected a list, got {type(data).__name__}.")
+    return data
 
 #checks that program is being directly executed 
 if __name__ == "__main__":
