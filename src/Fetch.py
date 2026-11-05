@@ -4,14 +4,14 @@ import time
 
 BASE_URL = "https://dev-task.elancoapps.com/data"
 
-def fetch_with_retry(url, max_retries=5):
+def fetch_with_retry(url, max_retries=5, timeout=10):
     for attempt in range(max_retries):
         #exponential backoff in case of rate limit or server error
         wait = 2 ** attempt
 
         #tries GET for passed url, attempt fails if timed out or connection error
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=timeout)
         except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
             print(f"Attempt {attempt + 1}: {type(e).__name__}, retrying in {wait}s.")
             time.sleep(wait)
