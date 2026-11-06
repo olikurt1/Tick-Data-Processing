@@ -37,13 +37,3 @@ def fetch_sightings():
     if not isinstance(data, list):
         raise ValueError(f"Expected a list, got {type(data).__name__}.")
     return data
-
-#checks that program is being directly executed 
-if __name__ == "__main__":
-    data = fetch_sightings()
-
-    #if the response is a list then only the first two sightings are printed 
-    if isinstance(data, list):
-        print(data[:2])
-    else:
-        print(data)

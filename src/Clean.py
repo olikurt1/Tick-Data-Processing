@@ -1,5 +1,4 @@
 #Cleaning the data received from API
-from .Fetch import fetch_sightings
 import pandas as pd
 
 def clean(df):
@@ -27,12 +26,3 @@ def clean(df):
     df = df.drop_duplicates(subset=["date", "location", "species", "latinName"])
 
     return df
-
-
-
-if __name__ == "__main__":
-    df = pd.DataFrame(fetch_sightings())
-    
-    print(f"Length of dataFrame before cleaning: {len(df)}.")
-    records = clean(df)
-    print(f"Length of dataFrame after cleaning: {len(df)}.")
