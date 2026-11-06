@@ -3,6 +3,7 @@ import pandas as pd
 
 def clean(df):
     df = df.copy()
+    df = pd.DataFrame(df)
     columns = ["id", "date", "location", "species", "latinName"]
     for column in columns:
         #removing white space from all cells
