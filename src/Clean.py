@@ -1,15 +1,37 @@
 #Cleaning the data received from API
-from src.Fetch import fetch_sightings
+from .Fetch import fetch_sightings
 import pandas as pd
 
+def clean(df):
+    columns = ["id", "date", "location", "species", "latinName"]
+    for column in columns:
+        #removing white space from all cells
+        df[column] = df[column].str.strip()
+    
+    #empty string cells replaced NaN cells
+    df[columns] = df[columns].replace("", pd.NA)
 
-df = pd.DataFrame(fetch_sightings())
+    #normalising string cells with qualitative attributes
+    df["location"] = df["location"].str.title()
+    df["species"] = df["species"].str.capitalize()
+    df["latinName"] = df["species"].str.capitalize()
 
-print(df.head())
-print(df.tail())
+    #parsing dates, any unparsable cell becomes NaN
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
 
-#checking for duplicates based on same ID
-print(f"Duplicated ID's: {df.duplicated(subset="id").sum()}.")
+    #dropping rows that have NaN cell/s of important subsets
+    df = df.dropna(subset=["id", "date", "location"])
 
-#checking for duplicated sightings with different ID's
-print(f"Duplicate sightings with different ID: {df.drop(columns="id").duplicated().sum()}")
+    #removing duplicates based on everything except for ID
+    df = df.drop_duplicates(subset=["date", "location", "species", "latinName"])
+
+    return df
+
+
+
+if __name__ == "__main__":
+    df = pd.DataFrame(fetch_sightings())
+    
+    print(f"Length of dataFrame before cleaning: {len(df)}.")
+    df = clean(df)
+    print(f"Length of dataFrame after cleaning: {len(df)}.")
