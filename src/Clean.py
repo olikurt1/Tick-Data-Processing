@@ -3,6 +3,7 @@ from .Fetch import fetch_sightings
 import pandas as pd
 
 def clean(df):
+    df = df.copy()
     columns = ["id", "date", "location", "species", "latinName"]
     for column in columns:
         #removing white space from all cells
@@ -14,7 +15,7 @@ def clean(df):
     #normalising string cells with qualitative attributes
     df["location"] = df["location"].str.title()
     df["species"] = df["species"].str.capitalize()
-    df["latinName"] = df["species"].str.capitalize()
+    df["latinName"] = df["latinName"].str.capitalize()
 
     #parsing dates, any unparsable cell becomes NaN
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -33,5 +34,5 @@ if __name__ == "__main__":
     df = pd.DataFrame(fetch_sightings())
     
     print(f"Length of dataFrame before cleaning: {len(df)}.")
-    df = clean(df)
+    records = clean(df)
     print(f"Length of dataFrame after cleaning: {len(df)}.")
