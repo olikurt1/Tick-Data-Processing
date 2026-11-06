@@ -78,10 +78,31 @@ def search_sightings(startDate=None, endDate=None, locationFilter=None, speciesF
 
 #Query database for sighting by id
 def get_sightings(sightings_id, db_path=DB_PATH):
-    conn.row_factory = sqlite3.Row
     with sqlite3.connect(db_path) as conn:
-        row = conn.execute("SELECT * FROM sightings WHERE sighting = ?", (sightings_id,)).fetchone()
+        conn.row_factory = sqlite3.Row
+        row = conn.execute("SELECT * FROM sightings WHERE id = ?", (sightings_id,)).fetchone()
+    #condition to handle lack of row if row with given id doesn't exist
     if row:
         return dict(row)
     else:
         return None
+
+#groups rows by location and counts how many sightings each location has
+def count_by_region(db_path=DB_PATH):
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT location, COUNT(*) AS sightings FROM sightings "
+        "GROUP BY location ORDER BY sightings DESC").fetchall()
+    return [dict(row) for row in rows]
+
+#group rows by period of time and count sightings for each period
+FORMATS = {"month": "%Y-%m ", "week": "%Y-W%W "}
+
+def count_by_period(period="month", db_path=DB_PATH):
+    format = FORMATS[period]
+
+    with sqlite3.connect(db_path) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute("SELECT strftime(?, date) AS period, COUNT(*) AS sighting from sightings "
+        "GROUP BY period ORDER BY period", (format, )).fetchall()
+    return [dict(row) for row in rows]
