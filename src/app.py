@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
 from datetime import date
-from src.Store import get_sighting, count_by_region, search_sightings
+from src.Store import get_sighting, count_by_region, search_sightings, count_by_period
 
 #reads integer such as limit or offset, nothings passed then default offset used, checks if value is castable to int
 def parse_int_parameter(name, default, min_value, max_value):
@@ -42,6 +42,7 @@ def not_found(e):
 def server_error(e):
     return jsonify(error="Internal server error"), 500
 
+
 #endpoint for receiving filtered records
 @app.get("/sightings")
 def list_sightings():
@@ -60,7 +61,6 @@ def list_sightings():
         speciesFilter=species, 
         limit=limit, offset=offset
     )
-
     return jsonify(count=len(results), limit=limit, offset=offset, results=results)
 
 
@@ -69,6 +69,7 @@ def list_sightings():
 def sightings_by_region():
     return jsonify(count_by_region())
 
+
 #endpoint to get single sighting by its ID
 @app.get("/sightings/<sighting_id>")
 def sighting_detail(sighting_id):
@@ -76,4 +77,12 @@ def sighting_detail(sighting_id):
     if sighting is None:
         abort(404, description="Sighting not found")
     return jsonify (sighting)
+
+#endpoint returning sightings by monthly or weekly periods
+@app.get("/stats/by-period")
+def sightings_by_period():
+    period = request.args.get("period, month")
+    if period not in ("month", "week"):
+        abort(400, description="'period' must be 'month' or 'week'")
+    return jsonify(period=period, results=count_by_period(period))
 
