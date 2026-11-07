@@ -1,6 +1,20 @@
 from flask import Flask, jsonify, abort, request
 from datetime import date
-from src.Store import get_sighting, count_by_region
+from src.Store import get_sighting, count_by_region, search_sightings
+
+#reads integer such as limit or offset, nothings passed then default offset used, checks if value is castable to int
+def parse_int_parameter(name, default, min_value, max_value):
+    value = request.args.get(name)
+    if value is None:
+        return default
+    try:
+        number = int(value)
+    except ValueError:
+        abort(400, description=f"'{name}' must be a whole number")
+    #once parsed checks that value is within range
+    if number < min_value or number > max_value:
+        abort(400, description=f"'{name}' must be between {min_value} and {max_value}")
+    return number    
 
 #reads start and end dates, turns string date into actual date and raises error if date isn't iso standard
 def parse_date_parameter(name):
@@ -27,6 +41,27 @@ def not_found(e):
 @app.errorhandler(500)
 def server_error(e):
     return jsonify(error="Internal server error"), 500
+
+#endpoint for receiving filtered records
+@app.get("/sightings")
+def list_sightings():
+    start_date = parse_date_parameter("start")
+    end_date = parse_date_parameter("end")
+    if start_date != None and end_date != None and start_date > end_date:
+        abort(400, description="'start' must be before end")
+
+    location = request.args.get("location")
+    species = request.args.get("species")
+    limit = parse_int_parameter("limit", 50, 1, 500)
+    offset = parse_int_parameter("offset", 0, 0, 10_000)
+
+    results = search_sightings(startDate=start_date, endDate=end_date, 
+        locationFilter=location, 
+        speciesFilter=species, 
+        limit=limit, offset=offset
+    )
+
+    return jsonify(count=len(results), limit=limit, offset=offset, results=results)
 
 
 #endpoint of grouped sightings by region
