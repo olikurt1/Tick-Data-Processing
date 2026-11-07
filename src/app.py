@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, abort, request
 from datetime import date
-from src.Store import get_sighting, count_by_region, search_sightings, count_by_period
+from src.Store import get_sighting, count_by_region, search_sightings, count_by_period, count_sightings
 
 #reads integer such as limit or offset, nothings passed then default offset used, checks if value is castable to int
 def parse_int_parameter(name, default, min_value, max_value):
@@ -85,4 +85,12 @@ def sightings_by_period():
     if period not in ("month", "week"):
         abort(400, description="'period' must be 'month' or 'week'")
     return jsonify(period=period, results=count_by_period(period))
+
+#endpoint for checking health when parameter is added to url  
+@app.get("/health")
+def health():
+    total = count_sightings()
+    if total == 0:
+        return jsonify(status="no data", sightings=0), 503
+    return jsonify(status="ok", sightings=total)
 
