@@ -106,3 +106,12 @@ def count_by_period(period="month", db_path=DB_PATH):
         rows = conn.execute("SELECT strftime(?, date) AS period, COUNT(*) AS sighting from sightings "
         "GROUP BY period ORDER BY period", (format, )).fetchall()
     return [dict(row) for row in rows]
+
+def count_sightings(db_path=DB_PATH):
+    try:
+        with sqlite3.connect(db_path) as conn:
+            #return one row which counts rows in sightings
+            return conn.execute("SELECT COUNT(*) FROM sightings").fetchone()[0]
+    #will occur if table doesn't exist
+    except sqlite3.OperationalError:
+        return 0
