@@ -1,5 +1,16 @@
-from flask import Flask, jsonify, abort
+from flask import Flask, jsonify, abort, request
+from datetime import date
 from src.Store import get_sighting, count_by_region
+
+#reads start and end dates, turns string date into actual date and raises error if date isn't iso standard
+def parse_date_parameter(name):
+    value = request.args.get(name)
+    if value is None:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        abort(400, description=f"'{name} must be a date like 2024-01-19")
 
 #routes get attached to "app" and app lives in this module
 app = Flask(__name__)
