@@ -77,7 +77,7 @@ def search_sightings(startDate=None, endDate=None, locationFilter=None, speciesF
     return [dict(row) for row in rows]
 
 #Query database for sighting by id
-def get_sightings(sightings_id, db_path=DB_PATH):
+def get_sighting(sightings_id, db_path=DB_PATH):
     with sqlite3.connect(db_path) as conn:
         conn.row_factory = sqlite3.Row
         row = conn.execute("SELECT * FROM sightings WHERE id = ?", (sightings_id,)).fetchone()
