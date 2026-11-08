@@ -24,7 +24,7 @@ def parse_date_parameter(name):
     try:
         return date.fromisoformat(value)
     except ValueError:
-        abort(400, description=f"'{name} must be a date like 2024-01-19")
+        abort(400, description=f"'{name}' must be a date like 2024-01-19")
 
 #routes get attached to "app" and app lives in this module
 app = Flask(__name__)
@@ -81,7 +81,7 @@ def sighting_detail(sighting_id):
 #endpoint returning sightings by monthly or weekly periods
 @app.get("/stats/by-period")
 def sightings_by_period():
-    period = request.args.get("period, month")
+    period = request.args.get("period", "month")
     if period not in ("month", "week"):
         abort(400, description="'period' must be 'month' or 'week'")
     return jsonify(period=period, results=count_by_period(period))
