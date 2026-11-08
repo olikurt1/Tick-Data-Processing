@@ -61,3 +61,7 @@ Within Store.py, value_to_db() is required for the attributes it is applied to b
 - Scheduled sychronisation: Run sync.py automatically at set intervals. 
 - Containerising with Docker
 - Deploy to a public URL
+
+## Walkthrough
+
+[Walkthrough](https://youtu.be/GY-o8DDqKg8)
