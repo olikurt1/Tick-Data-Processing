@@ -36,6 +36,8 @@ sync.py is responsible for orchestrating the data pipeline. It runs every single
 
 I chose to store the entire Elanco tick dataset into a database once rather than constantly calling the API because in the event that the Elanco service was to go down, my program would still have the dataset stored. app.py would still be able to fulfill requests. The only shortfall of this decision is that if the Elanco dataset is updated, my database won't reflect this so the program will be working on older data. This can be resolved by re running sync.py but knowing when to run sync.py is the issue. 
 
+I chose to use Python because I'm most familiar with this language. It also includes many well established libraries that enable fast development speed on a deadline. I decided to use Flask as I had played around with it before so had some familiarity with how it worked. Along with this Pandas provides strong data cleaning tools. Furthermore, using Python has provided room to grow in terms of implementing AI/ML insights through libraries such as scikit-learn.
+
 app.py is the Flask API server responsible for serving requests made to endpoints that query the database with specificity. This file includes all the endpoints that query the database and the endpoint for checking the database health. 
 
 ## Data Handling
